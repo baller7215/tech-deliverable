@@ -1,8 +1,9 @@
-import "./App.css";
+// import "./App.css";
+import './index.css';
 
 function App() {
 	return (
-		<div className="App">
+		<div className="App bg-red-300">
 			{/* TODO: include an icon for the quote book */}
 			<h1>Hack at UCI Tech Deliverable</h1>
 
