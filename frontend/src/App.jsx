@@ -19,11 +19,6 @@ function App() {
 	const [name, setName] = useState("");
 	const [message, setMessage] = useState("");
 
-	// fetch all quotes on initial render
-	// useEffect(() => {
-	// 	fetchQuotes('all');
-	// }, []);
-
 	// fetch quotes from the API based on the selected tab
 	useEffect(() => {
 		fetchQuotes(selectedTab);
@@ -66,8 +61,10 @@ function App() {
 		}
 	}
 
-	// method to sort quotes by time
-	// const sortedQuotes = quotes.sort((a, b) => new Date(b.time) - new Date(a.time));
+	const handleTabChange = (tab) => {
+		// event.preventDefault();
+        setSelectedTab(tab);
+    };
 
 	return (
 		<div className={`App relative isolate bg-[url('./public/background.png')] bg-white/70 bg-center bg-cover bg-fixed min-h-dvh flex-grow`}>
@@ -105,37 +102,26 @@ function App() {
 
 			<div className="w-full h-auto" id="quotes">
 				<h2>Previous Quotes</h2>
-				<Tabs defaultValue="all" className="w-full min-w-full" onValueChange={setSelectedTab}>
-					<TabsList>
-						<TabsTrigger value="all">All</TabsTrigger>
-						<TabsTrigger value="week">Week</TabsTrigger>
-						<TabsTrigger value="month">Month</TabsTrigger>
-						<TabsTrigger value="year">Year</TabsTrigger>
-					</TabsList>
-					<TabsContent value="all">
-						<div className="w-full flex flex-col gap-3">
-							{selectedTab === "all" && sortedQuotes.map((quote, index) => (
-								<Quote key={index} quote={quote} />
-							))}
-						</div>
 
-					</TabsContent>
-					<TabsContent value="week">
-						{selectedTab === "week" && sortedQuotes.map((quote, index) => (
-							<Quote key={index} quote={quote} />
-						))}
-					</TabsContent>
-					<TabsContent value="month">
-						{selectedTab === "month" && sortedQuotes.map((quote, index) => (
-							<Quote key={index} quote={quote} />
-						))}
-					</TabsContent>
-					<TabsContent value="year">
-						{selectedTab === "year" && sortedQuotes.map((quote, index) => (
-							<Quote key={index} quote={quote} />
-						))}
-					</TabsContent>
-				</Tabs>
+				<div className="h-auto w-full min-w-full flex flex-row justify-between place-items-center gap-3">
+					{['all', 'week', 'month', 'year'].map(((value) => {
+						return (
+							<button
+								key={value}
+								onClick={() => setSelectedTab(value)}
+								className="lowercase"
+							>
+								{value}
+							</button>
+						)
+					}))}
+				</div>
+
+				<div className="w-full min-w-full">
+					{sortedQuotes.map((quote, index) => (
+						<Quote key={index} quote={quote} />
+					))}
+				</div>
 			</div>
 		</div>
 	);
