@@ -45,7 +45,8 @@ def post_message(name: str = Form(), message: str = Form()) -> RedirectResponse:
     print(database, quote)
 
     # You may modify the return value as needed to support other functionality
-    return RedirectResponse("/", status.HTTP_303_SEE_OTHER)
+    # return RedirectResponse("/#quotes", status.HTTP_303_SEE_OTHER)
+    return JSONResponse(content=quote, status_code=status.HTTP_201_CREATED)
 
 
 # TODO: add another API route with a query parameter to retrieve quotes based on max age

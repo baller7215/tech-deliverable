@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
+import axios from 'axios';
 import Header from './Header';
 import './index.css';
-import { Provider } from "/components/ui/provider";
-// import { Tabs } from "@chakra-ui/react";
-import background from './public/background.png';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Quote from './Quote';
 
@@ -16,82 +14,130 @@ import Quote from './Quote';
  */
 function App() {
 	const [quotes, setQuotes] = useState([]);
+	const [sortedQuotes, setSortedQuotes] = useState([]);
 	const [selectedTab, setSelectedTab] = useState("all");
+	const [name, setName] = useState("");
+	const [message, setMessage] = useState("");
 
-	// Fetch quotes from the API based on the selected tab
+	// fetch all quotes on initial render
+	// useEffect(() => {
+	// 	fetchQuotes('all');
+	// }, []);
+
+	// fetch quotes from the API based on the selected tab
 	useEffect(() => {
-		fetch(`/api/quotes?max_age=${selectedTab}#quotes`)
-		.then(response => response.json())
-		.then(data => setQuotes(data))
-		.catch(error => console.error('Error fetching quotes:', error));
+		fetchQuotes(selectedTab);
 	}, [selectedTab]);
 
-	// Function to sort quotes by time
-	const sortedQuotes = quotes.sort((a, b) => new Date(b.time) - new Date(a.time));
+	// method to fetch quotes
+	const fetchQuotes = async (selectedTab) => {
+		try {
+			console.log('fetching quotes now');
+			const response = await axios.get(`/api/quotes?max_age=${selectedTab}`);
+			setQuotes(response.data);
+			const sorted = response.data.sort((a, b) => new Date(b.time) - new Date(a.time));
+			setSortedQuotes(sorted);
+			console.log('updated quotes\n', sortedQuotes);
+		} catch (error) {
+			console.error('Error fetching quotes:', error);
+		}
+	};
+
+	// method that handles submitting and making post request
+	const handleSubmit = async (event) => {
+		event.preventDefault();
+		try {
+			const formData = new FormData();
+			formData.append('name', name);
+			formData.append('message', message);
+
+			await axios.post('api/quote', formData, {
+				headers: {
+					'Content-Type': 'multipart/form-data',
+				}
+			});
+
+			console.log('submitted quote:');
+			fetchQuotes(selectedTab);
+			setName("");
+			setMessage("");
+		} catch (error) {
+			console.error('Error submitting quote:', error);
+		}
+	}
+
+	// method to sort quotes by time
+	// const sortedQuotes = quotes.sort((a, b) => new Date(b.time) - new Date(a.time));
 
 	return (
-		// <Provider>
-			<div className={`App isolate bg-[url('./public/background.png')] bg-white/70 bg-center bg-cover min-h-dvh flex-grow`}>
-				{/* TODO: include an icon for the quote book */}
-				<Header />
+		<div className={`App relative isolate bg-[url('./public/background.png')] bg-white/70 bg-center bg-cover bg-fixed min-h-dvh flex-grow`}>
+			{/* TODO: include an icon for the quote book */}
+			<Header />
 
-				<div className="w-full h-[75vh] py-10">
-					<h2>Submit a quote</h2>
+			<div className="max-w-[800px] w-full h-[75vh] py-10 bg-black/30 mx-auto my-auto justify-center">
+				<div className="max-w-[500px] h-full m-auto flex flex-col justify-center gap-2">
+					<h2 className="text-center">Submit a quote</h2>
 					{/* TODO: implement custom form submission logic to not refresh the page */}
-					<form action="/api/quote#quotes" method="post" className="max-w-[500px] flex flex-col gap-2">
+					<form onSubmit={handleSubmit} className="w-full flex flex-col gap-2">
 						<label htmlFor="input-name">Name</label>
-						<input type="text" name="name" id="input-name" required />
+						<input
+							type="text"
+							name="name"
+							id="input-name"
+							value={name}
+							onChange={(e) => setName(e.target.value)}
+							required
+						/>
 						<label htmlFor="input-message">Quote</label>
-						<input type="text" name="message" id="input-message" required />
+						<input
+							type="text"
+							name="message"
+							id="input-message"
+							value={message}
+							onChange={(e) => setMessage(e.target.value)}
+							required />
 						<button type="submit">Submit</button>
 					</form>
 				</div>
-
-				<div className="w-full h-auto" id="quotes">
-					<h2>Previous Quotes</h2>
-					<Tabs defaultValue="all" className="w-full min-w-full" onValueChange={setSelectedTab}>
-						<TabsList>
-							<TabsTrigger value="all">All</TabsTrigger>
-							<TabsTrigger value="week">Week</TabsTrigger>
-							<TabsTrigger value="month">Month</TabsTrigger>
-							<TabsTrigger value="year">Year</TabsTrigger>
-						</TabsList>
-						<TabsContent value="all">
-							<div className="w-full flex flex-col gap-3">
-								{selectedTab === "all" && sortedQuotes.map((quote, index) => (
-									<Quote key={index} quote={quote} />
-								))}
-							</div>
-
-						</TabsContent>
-						<TabsContent value="week">
-							{selectedTab === "week" && sortedQuotes.map((quote, index) => (
-							<div key={index} className="quote">
-								<p><strong>{quote.name}</strong></p>
-								<p>{quote.message}</p>
-							</div>
-							))}
-						</TabsContent>
-						<TabsContent value="month">
-							{selectedTab === "month" && sortedQuotes.map((quote, index) => (
-							<div key={index} className="quote">
-								<p><strong>{quote.name}</strong></p>
-								<p>{quote.message}</p>
-							</div>
-							))}
-						</TabsContent>
-						<TabsContent value="year">
-							{selectedTab === "year" && sortedQuotes.map((quote, index) => (
-							<div key={index} className="quote">
-								<p><strong>{quote.name}</strong></p>
-								<p>{quote.message}</p>
-							</div>
-							))}
-						</TabsContent>
-					</Tabs>
-				</div>
 			</div>
-		// </Provider>
+
+			<a href="#quotes">Click me</a>
+
+			<div className="w-full h-auto" id="quotes">
+				<h2>Previous Quotes</h2>
+				<Tabs defaultValue="all" className="w-full min-w-full" onValueChange={setSelectedTab}>
+					<TabsList>
+						<TabsTrigger value="all">All</TabsTrigger>
+						<TabsTrigger value="week">Week</TabsTrigger>
+						<TabsTrigger value="month">Month</TabsTrigger>
+						<TabsTrigger value="year">Year</TabsTrigger>
+					</TabsList>
+					<TabsContent value="all">
+						<div className="w-full flex flex-col gap-3">
+							{selectedTab === "all" && sortedQuotes.map((quote, index) => (
+								<Quote key={index} quote={quote} />
+							))}
+						</div>
+
+					</TabsContent>
+					<TabsContent value="week">
+						{selectedTab === "week" && sortedQuotes.map((quote, index) => (
+							<Quote key={index} quote={quote} />
+						))}
+					</TabsContent>
+					<TabsContent value="month">
+						{selectedTab === "month" && sortedQuotes.map((quote, index) => (
+							<Quote key={index} quote={quote} />
+						))}
+					</TabsContent>
+					<TabsContent value="year">
+						{selectedTab === "year" && sortedQuotes.map((quote, index) => (
+							<Quote key={index} quote={quote} />
+						))}
+					</TabsContent>
+				</Tabs>
+			</div>
+		</div>
 	);
 }
 
