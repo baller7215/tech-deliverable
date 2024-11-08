@@ -61,66 +61,85 @@ function App() {
 		}
 	}
 
-	const handleTabChange = (tab) => {
-		// event.preventDefault();
-        setSelectedTab(tab);
-    };
-
 	return (
 		<div className={`App relative isolate bg-[url('./public/background.png')] bg-white/70 bg-center bg-cover bg-fixed min-h-dvh flex-grow`}>
 			{/* TODO: include an icon for the quote book */}
 			<Header />
 
-			<div className="max-w-[800px] w-full h-[75vh] py-10 bg-black/30 mx-auto my-auto justify-center">
-				<div className="max-w-[500px] h-full m-auto flex flex-col justify-center gap-2">
-					<h2 className="text-center">Submit a quote</h2>
-					{/* TODO: implement custom form submission logic to not refresh the page */}
-					<form onSubmit={handleSubmit} className="w-full flex flex-col gap-2">
-						<label htmlFor="input-name">Name</label>
-						<input
-							type="text"
-							name="name"
-							id="input-name"
-							value={name}
-							onChange={(e) => setName(e.target.value)}
-							required
-						/>
-						<label htmlFor="input-message">Quote</label>
-						<input
-							type="text"
-							name="message"
-							id="input-message"
-							value={message}
-							onChange={(e) => setMessage(e.target.value)}
-							required />
-						<button type="submit">Submit</button>
-					</form>
-				</div>
-			</div>
-
-			<a href="#quotes">Click me</a>
-
-			<div className="w-full h-auto" id="quotes">
-				<h2>Previous Quotes</h2>
-
-				<div className="h-auto w-full min-w-full flex flex-row justify-between place-items-center gap-3">
-					{['all', 'week', 'month', 'year'].map(((value) => {
-						return (
+			<div className="grid grid-cols-1 md:grid-cols-2 gap-5 justify-center h-full my-auto">
+				<div className="hoverLarge scale-95 hover:!scale-100 max-w-[800px] w-full h-full py-10 bg-blue-700/15 rounded-lg border-[1px] border-transparent shadow-md mx-auto my-auto justify-center">
+					<div className="max-w-[500px] h-full m-auto flex flex-col justify-center gap-5">
+						<h2 className="text-center lowercase text-8xl text-black">Submit a quote</h2>
+						{/* TODO: implement custom form submission logic to not refresh the page */}
+						<form onSubmit={handleSubmit} className="w-full flex flex-col gap-5">
+							<div className="flex flex-col gap-2">
+								<label
+									htmlFor="input-name"
+									className="lowercase text-xl text-black"
+								>
+									Name
+								</label>
+								<input
+									type="text"
+									name="name"
+									id="input-name"
+									value={name}
+									onChange={(e) => setName(e.target.value)}
+									className="hoverTransition w-full text-3xl bg-white/30 text-black rounded-xl shadow-md p-3 border-[3px] border-transparent hover:border-blue-400 focus:border-blue-400"
+									placeholder="peter the anteater"
+									required
+								/>
+							</div>
+							<div className="flex flex-col gap-2">
+								<label
+									htmlFor="input-message"
+									className="lowercase text-xl text-black"
+								>
+									Quote
+								</label>
+								<textarea
+									type="text"
+									name="message"
+									id="input-message"
+									value={message}
+									onChange={(e) => setMessage(e.target.value)}
+									className="hoverTransition w-full text-3xl bg-white/30 text-black rounded-xl shadow-md p-3 border-[3px] border-transparent hover:border-blue-400 focus:border-blue-400 max-h-[20vh]"
+									placeholder="zot! zot! zot!"
+									required />
+							</div>
 							<button
-								key={value}
-								onClick={() => setSelectedTab(value)}
-								className="lowercase"
+								type="submit"
+								className="hoverTransition bg-blue-500/50 border-[3px] border-transparent hover:border-blue-500/50 hover:bg-transparent rounded-full p-3 text-3xl mt-5"
 							>
-								{value}
+								Submit
 							</button>
-						)
-					}))}
+						</form>
+					</div>
 				</div>
+				<div className="w-full h-full max-h-[80vh] flex flex-col gap-3 p-5" id="quotes">
+					{/* <h2 className="lowercase text-5xl text-left">Previous Quotes</h2> */}
 
-				<div className="w-full min-w-full">
-					{sortedQuotes.map((quote, index) => (
-						<Quote key={index} quote={quote} />
-					))}
+					<div className="bg-transparent shadow-md rounded-full border-[2px] h-auto w-full min-w-full flex flex-row justify-between place-items-center gap-3">
+						{['all', 'week', 'month', 'year'].map(((value) => {
+							return (
+								<button
+									key={value}
+									onClick={() => setSelectedTab(value)}
+									className={`hoverTransition lowercase w-full text-gray-500 rounded-full p-2 m-1
+										${value == selectedTab ? 'bg-blue-700/15' : ''}
+									`}
+								>
+									{value}
+								</button>
+							)
+						}))}
+					</div>
+
+					<div className="w-full min-w-full h-full max-h-[70vh] overflow-y-auto py-3 shadow-md bg-transparent border-[2px] rounded-xl flex flex-col gap-3">
+						{sortedQuotes.map((quote, index) => (
+							<Quote key={index} quote={quote} />
+						))}
+					</div>
 				</div>
 			</div>
 		</div>

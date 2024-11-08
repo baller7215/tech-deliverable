@@ -7,8 +7,16 @@
 }
 
 .App {
-	@apply flex flex-col text-black px-20 pb-20;
+	@apply flex flex-col text-black px-20 pb-10;
 	/* @apply bg-[url('../../public/background.png')] bg-cover bg-center */
+}
+
+.hoverLarge {
+	@apply transition ease-in-out duration-500 hover:scale-105;
+}
+
+.hoverTransition {
+	@apply transition ease-in-out duration-500;
 }
 
 @layer base {
