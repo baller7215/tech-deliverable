@@ -19,6 +19,12 @@
 	@apply transition ease-in-out duration-500;
 }
 
+.jetbrains-mono {
+  font-family: "JetBrains Mono", monospace;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
 @layer base {
   :root {
 		--background: 0 0% 100%;
