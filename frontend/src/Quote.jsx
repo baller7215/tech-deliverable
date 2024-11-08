@@ -9,7 +9,7 @@ const Quote = ({ quote }) => {
                 |
                 <h4 className='text-base'>{new Date(quote.time).toLocaleString()}</h4>
             </div>
-            <h2 className='text-2xl'>{quote.message}</h2>
+            <h2 className='text-2xl overflow-x-auto'>{quote.message}</h2>
         </div>
     )
 }
